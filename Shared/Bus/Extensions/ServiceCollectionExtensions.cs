@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Bus.Clients;
+using Shared.Bus.Commands.Handlers;
 using Shared.Bus.Connections;
 
 namespace Shared.Bus.Extensions
@@ -14,6 +15,7 @@ namespace Shared.Bus.Extensions
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             services
                 .AddMediatR(assemblies)
+                .AddScoped(typeof(IRequestHandler<,>), typeof(RpcHandler<,>))
                 .AddSingleton(
                     new RabbitMQConnection(
                         configuration.GetConnectionString("RabbitMQ"),

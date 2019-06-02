@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared;
+using Shared.Bus.Commands.Options;
 using Shared.Bus.Extensions;
 using Shared.Events.Options;
 
@@ -24,6 +26,7 @@ namespace Api
             services.AddBusMediatR(Configuration);
             services.Configure<BusPublishOptions<Notification1>>(Configuration.GetSection("Events:Notification1"));
             services.Configure<BusPublishOptions<Notification2>>(Configuration.GetSection("Events:Notification2"));
+            services.Configure<BusRpcOptions<Request, Message>>(Configuration.GetSection("Commands:Request"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

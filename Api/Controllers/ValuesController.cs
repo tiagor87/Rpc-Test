@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 
 namespace Api.Controllers
 {
@@ -13,41 +14,13 @@ namespace Api.Controllers
         public ValuesController(IMediator mediator)
         {
             _mediator = mediator;
-
-            _mediator.Publish(new Notification1()).Wait();
-            _mediator.Publish(new Notification2()).Wait();
         }
 
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<ActionResult<Message>> Get([FromQuery] string value)
         {
-            return Ok(new[] {"Test"});
-        }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return Ok(await _mediator.Send(new Request(value)));
         }
     }
 }

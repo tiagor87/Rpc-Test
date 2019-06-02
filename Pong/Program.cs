@@ -5,7 +5,7 @@ namespace Pong
 {
     class HelloWorldRpcServer : RpcServer<Message, Message>
     {
-        public HelloWorldRpcServer(string connectionString) : base(connectionString, new JsonSerializer())
+        public HelloWorldRpcServer(string connectionString) : base(connectionString, new JsonBusSerializer())
         {
         }
 
@@ -15,7 +15,6 @@ namespace Pong
             {
                 Value = $"Hello {request.Value}"
             };
-
         }
     }
 

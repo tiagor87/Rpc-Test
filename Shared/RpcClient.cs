@@ -9,19 +9,18 @@ namespace Shared
 {
     public class RpcClient : IDisposable
     {
-        private bool _disposed;
-        
-        private readonly ISerializer _serializer;
-        private readonly IConnection _connection;
+        private readonly IBusSerializer _busSerializer;
         private readonly IModel _channel;
-        private readonly BlockingCollection<byte[]> _responseQueue = new BlockingCollection<byte[]>();
+        private readonly IConnection _connection;
+        private readonly EventingBasicConsumer _consumer;
         private readonly IBasicProperties _props;
         private readonly string _replyQueueName;
-        private readonly EventingBasicConsumer _consumer;
+        private readonly BlockingCollection<byte[]> _responseQueue = new BlockingCollection<byte[]>();
+        private bool _disposed;
 
-        public RpcClient(string connectionString, ISerializer serializer)
+        public RpcClient(string connectionString, IBusSerializer busSerializer)
         {
-            _serializer = serializer;
+            _busSerializer = busSerializer;
             var factory = new ConnectionFactory();
             factory.Uri = new Uri(connectionString);
 
@@ -32,7 +31,7 @@ namespace Shared
             _props = _channel.CreateBasicProperties();
             _props.CorrelationId = Guid.NewGuid().ToString();
             _props.ReplyTo = _replyQueueName;
-            
+
             _consumer.Received += (model, @event) =>
             {
                 var body = @event.Body;
@@ -43,12 +42,18 @@ namespace Shared
             };
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         public async Task<TResponse> SendAsync<TRequest, TResponse>(TRequest request)
         {
             var body = request is string
                 ? Encoding.UTF8.GetBytes(request as string)
-                : _serializer.Serialize(request).Result;
-            
+                : _busSerializer.Serialize(request);
+
             _channel.BasicPublish(
                 "",
                 "rpc_queue",
@@ -61,18 +66,12 @@ namespace Shared
                 true);
 
             var replyBody = _responseQueue.Take();
-            return await _serializer.Deserialize<TResponse>(replyBody);
+            return _busSerializer.Deserialize<TResponse>(replyBody);
         }
 
         ~RpcClient()
         {
             Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         private void Dispose(bool disposing)

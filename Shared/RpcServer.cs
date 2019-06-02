@@ -1,20 +1,40 @@
 using System;
+using MediatR;
+using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace Shared
 {
+    public class RpcRequestHandler<TRequest, TResponse> : RpcServer<TRequest, TResponse>
+        where TRequest : IRequest<TResponse>
+    {
+        private readonly IMediator _mediator;
+
+        protected RpcRequestHandler(
+            IMediator mediator,
+            IConfiguration configuration,
+            IBusSerializer busSerializer) : base(configuration.GetConnectionString("RabbitMQ"), busSerializer)
+        {
+            _mediator = mediator;
+        }
+
+        protected override TResponse Execute(TRequest request)
+        {
+            return _mediator.Send(request).Result;
+        }
+    }
+
     public abstract class RpcServer<TRequest, TResponse> : IDisposable
     {
-        private bool _disposed;
-        
-        private readonly ISerializer _serializer;
-        private readonly IConnection _connection;
+        private readonly IBusSerializer _busSerializer;
         private readonly IModel _channel;
+        private readonly IConnection _connection;
+        private bool _disposed;
 
-        protected RpcServer(string connectionString, ISerializer serializer)
+        protected RpcServer(string connectionString, IBusSerializer busSerializer)
         {
-            _serializer = serializer;
+            _busSerializer = busSerializer;
 
             var factory = new ConnectionFactory
             {
@@ -23,7 +43,7 @@ namespace Shared
 
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
-            
+
             _channel.QueueDeclare(
                 "rpc_queue",
                 false,
@@ -34,13 +54,13 @@ namespace Shared
                 0,
                 1,
                 false);
-                
+
             var consumer = new EventingBasicConsumer(_channel);
             _channel.BasicConsume(
                 "rpc_queue",
                 false,
                 consumer);
-            
+
             consumer.Received += (model, @event) =>
             {
                 var response = default(TResponse);
@@ -52,7 +72,7 @@ namespace Shared
 
                 try
                 {
-                    var request = _serializer.Deserialize<TRequest>(body).Result;
+                    var request = _busSerializer.Deserialize<TRequest>(body);
                     response = Execute(request);
                 }
                 catch (Exception e)
@@ -61,9 +81,9 @@ namespace Shared
                 }
                 finally
                 {
-                    var responseBytes = _serializer.Serialize(response).Result;
+                    var responseBytes = _busSerializer.Serialize(response);
                     _channel.BasicPublish(
-                        "", 
+                        "",
                         props.ReplyTo,
                         replyProps,
                         responseBytes);
@@ -74,13 +94,13 @@ namespace Shared
             };
         }
 
-        protected abstract TResponse Execute(TRequest request);
-        
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        protected abstract TResponse Execute(TRequest request);
 
         private void Dispose(bool disposing)
         {

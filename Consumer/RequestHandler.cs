@@ -1,10 +1,18 @@
+using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using Shared;
 
 namespace Consumer
 {
-    public class Request : IRequest<Message>
+    class RequestHandler : IRequestHandler<Request, Message>
     {
-        public string Value { get; set; }
+        public Task<Message> Handle(Request request, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(new Message
+            {
+                Value = $"Hello {request.Value}"
+            });
+        }
     }
 }

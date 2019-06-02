@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Shared;
 
 namespace Consumer
 {
@@ -28,6 +23,9 @@ namespace Consumer
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
+            services
+                .AddSingleton(new JsonBusSerializer())
+                .AddSingleton<RpcRequestHandler<Request, Message>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

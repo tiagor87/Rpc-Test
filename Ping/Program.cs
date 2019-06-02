@@ -7,7 +7,7 @@ namespace Ping
     {
         static void Main(string[] args)
         {
-            using (var client = new RpcClient("amqp://guest:guest@localhost", new JsonSerializer()))
+            using (var client = new RpcClient("amqp://guest:guest@localhost", new JsonBusSerializer()))
             {
                 try
                 {

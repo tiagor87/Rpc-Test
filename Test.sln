@@ -1,10 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# 
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ping", "Ping\Ping.csproj", "{3387D733-1CEB-4AF2-8E08-8D2552185096}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pong", "Pong\Pong.csproj", "{268AA086-882C-499D-AA8A-774675321EDC}"
-EndProject
+#
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{F53E46C1-1838-45DA-B9E6-94279A945B2A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{CD71C822-4BB8-49FC-8AE4-4B4EA4B4A7FF}"
@@ -17,14 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3387D733-1CEB-4AF2-8E08-8D2552185096}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3387D733-1CEB-4AF2-8E08-8D2552185096}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3387D733-1CEB-4AF2-8E08-8D2552185096}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3387D733-1CEB-4AF2-8E08-8D2552185096}.Release|Any CPU.Build.0 = Release|Any CPU
-		{268AA086-882C-499D-AA8A-774675321EDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{268AA086-882C-499D-AA8A-774675321EDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{268AA086-882C-499D-AA8A-774675321EDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{268AA086-882C-499D-AA8A-774675321EDC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F53E46C1-1838-45DA-B9E6-94279A945B2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F53E46C1-1838-45DA-B9E6-94279A945B2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F53E46C1-1838-45DA-B9E6-94279A945B2A}.Release|Any CPU.ActiveCfg = Release|Any CPU

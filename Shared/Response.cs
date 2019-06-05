@@ -1,6 +1,6 @@
 namespace Shared
 {
-    public class Message
+    public class Response
     {
         public string Value { get; set; }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -11,10 +12,15 @@ namespace Shared
             return Encoding.UTF8.GetBytes(json);
         }
 
-        public TResponse Deserialize<TResponse>(byte[] responseData)
+        public TResponse Deserialize<TResponse>(byte[] data)
         {
-            var json = Encoding.UTF8.GetString(responseData);
-            return (TResponse) JsonConvert.DeserializeObject(json, typeof(TResponse));
+            return (TResponse) Deserialize(typeof(TResponse), data);
+        }
+
+        public object Deserialize(Type type, byte[] data)
+        {
+            var json = Encoding.UTF8.GetString(data);
+            return JsonConvert.DeserializeObject(json, type);
         }
     }
 }

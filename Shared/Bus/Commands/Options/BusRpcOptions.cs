@@ -6,6 +6,6 @@ namespace Shared.Bus.Commands.Options
         where TRequest : IRequest<TResponse>
     {
         public string Exchange { get; set; }
-        public string RoutingKey { get; set; }
+        public string Queue { get; set; }
     }
 }

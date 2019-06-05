@@ -18,7 +18,7 @@ namespace Api.Controllers
 
         // GET api/values
         [HttpGet]
-        public async Task<ActionResult<Message>> Get([FromQuery] string value)
+        public async Task<ActionResult<Response>> Get([FromQuery] string value)
         {
             return Ok(await _mediator.Send(new Request(value)));
         }

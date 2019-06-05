@@ -13,15 +13,15 @@ namespace Shared.Bus.Extensions
         public static void AddBusMediatR(this IServiceCollection services, IConfiguration configuration)
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
             services
                 .AddMediatR(assemblies)
-                .AddScoped(typeof(IRequestHandler<,>), typeof(RpcHandler<,>))
-                .AddSingleton(
-                    new RabbitMQConnection(
-                        configuration.GetConnectionString("RabbitMQ"),
-                        new JsonBusSerializer()));
+                .AddScoped(typeof(IRequestHandler<,>), typeof(RpcCommandHandler<,>))
+                .AddSingleton<IBusSerializer, JsonBusSerializer>()
+                .AddSingleton<RabbitMQConnection>();
             services.AddSingleton<IBusPublishClient>(provider => provider.GetService<RabbitMQConnection>());
             services.AddSingleton<IBusRpcClient>(provider => provider.GetService<RabbitMQConnection>());
+            services.AddHostedService<RpcServers>();
         }
     }
 }

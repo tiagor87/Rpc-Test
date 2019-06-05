@@ -3,7 +3,7 @@ using Shared;
 
 namespace Api
 {
-    public class Request : IRequest<Message>
+    public class Request : IRequest<Response>
     {
         public Request(string value)
         {

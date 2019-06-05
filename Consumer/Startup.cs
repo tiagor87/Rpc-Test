@@ -1,11 +1,12 @@
-﻿using System;
-using MediatR;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared;
+using Shared.Bus.Commands.Options;
+using Shared.Bus.Extensions;
+using Shared.Bus.Servers;
 
 namespace Consumer
 {
@@ -22,10 +23,9 @@ namespace Consumer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
-            services
-                .AddSingleton(new JsonBusSerializer())
-                .AddSingleton<RpcRequestHandler<Request, Message>>();
+            services.AddBusMediatR(Configuration);
+            services.AddScoped<IBusRpcServer, BusRpcServer<Request, Response>>();
+            services.Configure<BusRpcOptions<Request, Response>>(Configuration.GetSection("Commands:Request"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

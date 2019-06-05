@@ -8,14 +8,14 @@ using Shared.Bus.Commands.Options;
 
 namespace Shared.Bus.Commands.Handlers
 {
-    public class RpcHandler<TRequest, TResponse> : IRequestHandler<TRequest, TResponse>
+    public class RpcCommandHandler<TRequest, TResponse> : IRequestHandler<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
 
     {
         private readonly IBusRpcClient _busClient;
         private readonly IOptions<BusRpcOptions<TRequest, TResponse>> _options;
 
-        public RpcHandler(IBusRpcClient busClient, IOptions<BusRpcOptions<TRequest, TResponse>> options)
+        public RpcCommandHandler(IBusRpcClient busClient, IOptions<BusRpcOptions<TRequest, TResponse>> options)
         {
             _busClient = busClient ?? throw new ArgumentNullException(nameof(busClient));
             _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -25,7 +25,7 @@ namespace Shared.Bus.Commands.Handlers
         {
             var response = _busClient.Send<TRequest, TResponse>(
                 _options.Value.Exchange,
-                _options.Value.RoutingKey,
+                _options.Value.Queue,
                 request);
 
             return Task.FromResult(response);
